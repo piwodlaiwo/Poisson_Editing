@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf8">
+    <title>PoissonEdit</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <nav>
+        <ul class="navi">
+            <li id="title">
+                Poisson<br> Image<br> Blending
+            </li>
+            <div id="buttons">
+                <li><a class="button" id="reset" onclick="reset()">reset</a></li>
+                <li><a class="button" id="save" onclick="save()" download="img.png" >save</a></li>
+                <li><a class="button" id="debug"onclick="debug()">debug</a></li><br>
+                <li><a class="button" onclick="poissonImporting(1)">import</a></li>
+                <li><a class="button" onclick="poissonImporting(0)">mix</a></li>
+                <li><a class="button" onclick="inverseRGB()">inverse</a></li>
+            </div>
+        </ul>
+    </nav>
+
+
+    <ul>
+        <li>
+            <canvas id="src" width="270" height="270" style="border:1px solid"></canvas>
+        </li>
+        <li>
+            <div id="plus">+</div>
+        </li>
+        <li>
+            <canvas id="blend" width="270" height="270" style="border:1px solid"></canvas>
+        </li>
+        <li>
+            <div id="equal">=</div>
+        </li>
+        <li>
+            <canvas id="result" width="270" height="270" style="border:1px solid"></canvas>
+        </li>
+    </ul>
+
+
+    <!--  <div id="footer">
+            <a href="https://takuti.me/dev/poisson/demo/" target="blank">[1]Posson Image Brending -Demo</a><br>
+            <a href="https://github.com/takuti/poisson-image-blending" target="blank">[2]Github</a>
+        </div> -->
+
+    <script src="main.js"></script>
+</body>
+
+</html>
