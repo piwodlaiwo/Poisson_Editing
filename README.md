@@ -16,9 +16,9 @@ Thank the Author for the nice program and the article.
 
 ## Usage
 1. select images
-    + left: base image
+    + left: a base image
     + middle: an image you want to blend with the base image
-    + right: mixed result image
+    + right: a mixed result image
 
 2. On the middle image, select blended area and click. You can adjust a position.
 3. blend
