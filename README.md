@@ -4,13 +4,13 @@ Poisson Image Blending on browser
 implementation of this paper:
 http://www.irisa.fr/vista/Publis/Publi/Perez03a.english.html
 
-<img width="953" alt="screenshot" src="https://user-images.githubusercontent.com/26299162/31848351-b220a77a-b66b-11e7-98da-06f2cff05009.png">
-
-## Description
-Seamless image blending based on Poisson Equation(https://en.wikipedia.org/wiki/Poisson%27s_equation)<br>
+Seamless image blending based on Poisson Equation <br>
 
 This program refers to https://takuti.me/note/poisson-image-blending .<br>
 Thank the Author for the nice program and the article.
+
+
+<img width="741" alt="204" src="https://user-images.githubusercontent.com/26299162/36550826-8f9d2bc6-1839-11e8-87bd-ceeed8c21ba8.png">
 
 ## Features
 + simple UI like drag ang drop selecting
