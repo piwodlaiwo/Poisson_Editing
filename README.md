@@ -4,11 +4,8 @@ Poisson Image Blending on browser
 implementation of this paper:
 http://www.irisa.fr/vista/Publis/Publi/Perez03a.english.html
 
-Seamless image blending based on Poisson Equation <br>
-
 This program refers to https://takuti.me/note/poisson-image-blending .<br>
 Thank the Author for the nice program and the article.
-
 
 <img width="741" alt="204" src="https://user-images.githubusercontent.com/26299162/36550826-8f9d2bc6-1839-11e8-87bd-ceeed8c21ba8.png">
 
