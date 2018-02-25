@@ -18,9 +18,6 @@ var selected_pixels;
 //STEP 1
 //-----------------------------------------
 
-
-
-
 function initCanvas(which_canvas) {
 
     var img = new Image();
