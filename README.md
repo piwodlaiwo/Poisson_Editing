@@ -1,11 +1,10 @@
 Poisson Image Blending on browser
 ====
 ## Overview
-implementation of this paper:
+Application of this paper:
 http://www.irisa.fr/vista/Publis/Publi/Perez03a.english.html
 
-the demo is [here](https://ugredium.github.io/Poisson_Editing/)
-
+The demo is [here](https://ugredium.github.io/Poisson_Editing/){:target="_blank"}.
 
 <img width="953" alt="screenshot" src="https://user-images.githubusercontent.com/26299162/31848351-b220a77a-b66b-11e7-98da-06f2cff05009.png">
 
