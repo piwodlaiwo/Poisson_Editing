@@ -1,6 +1,6 @@
 body {
     color: #006A6D;
-    background: #EBE9E2;
+    background: #FFFFFF;
     font-family: 'Merriweather', serif;
     font-size: 13px;
     -webkit-user-select: none;
@@ -20,7 +20,7 @@ body {
 
 #buttons {
     position: relative;
-    top: 70px;
+    /* top: 70px; */
 }
 
 a {
@@ -31,10 +31,16 @@ li {
     display: inline-block;
 }
 
+ul.main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 canvas {
-    position: relative;
-    top: 50px;
-    margin: 0px 40px;
+    /* position: relative; */
+    /* top: 50px; */
+    margin: 0px 20px;
 }
 
 #plus,
@@ -43,27 +49,43 @@ canvas {
     font-family: 'Yu Gothic';
     color: #006A6D;
 
-    position: relative;
-    bottom: 50px;
+    /* position: relative; */
+    /* bottom: 50px; */
 }
+
 
 .button {
     display: inline-block;
     font-size: 20px;
     font-family: 'Yu Gothic';
 
-    color: #020200;
-    background: #d4dbba;
-
-    border: solid 1px #006A6D;
+    /* color: #020200; */
+    /* background: #d4dbba; */
+    border: solid 2px #006A6D;
     border-radius: 3px;
 
-    padding: 2px 20px;
-    margin: 10px 100px;
 
     cursor: pointer;
 }
-.button#reset{
+
+/* pc */
+@media screen and (min-width: 1120px) {
+    .button {
+        padding: 2px 20px;
+        margin: 10px 100px;
+    }
+}
+
+/* mobile */
+@media screen and (max-width: 1120px) {
+    .button {
+        padding: 2px 20px;
+        margin: 10px 50px;
+    }
+}
+
+
+/* .button#reset{
     background: #c6c5be;
 }
 
@@ -74,12 +96,12 @@ canvas {
 .button#debug{
     background: #C7CD51;
 }
+*/
 
 .button:active {
     color: #ffffff;
-    /* background: #636864; */
+    background: #636864;
 }
-
 
 
 /* #footer {

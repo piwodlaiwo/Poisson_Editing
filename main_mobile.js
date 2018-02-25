@@ -1,10 +1,15 @@
-const m_width = 270;
+// const max_canvas_size = 270;
+const max_canvas_size = 235;
 const select_color = [0, 255, 255, 255];
+
+var fit_width = new Array();
+var fit_height = new Array();
+var loaded_img_count = 0;
 
 var dest_canvas, src_canvas, result_canvas;
 var dest_ctx, src_ctx, result_ctx;
 var dest_img, src_img, result_img;
-var loaded_img_count = 0;
+var dest_file, src_file;
 
 var selected_pixels;
 
@@ -13,16 +18,19 @@ var selected_pixels;
 //STEP 1
 //-----------------------------------------
 
+
+
+
 function initCanvas(which_canvas) {
 
     var img = new Image();
     if (which_canvas == "dest") {
-        var canvas = dest_canvas;
         var ctx = dest_ctx;
+        var canvas = dest_canvas;
         img = dest_img;
     } else if (which_canvas == "src") {
-        var canvas = src_canvas;
         var ctx = src_ctx;
+        var canvas = src_canvas;
         img = src_img;
     } else {
         return null;
@@ -38,7 +46,11 @@ function initCanvas(which_canvas) {
     var loadImage = function(e) {
         e.preventDefault();
 
-        var file = e.dataTransfer.files[0];
+        if (e.target.type == "file") {
+            var file = e.target.files[0];
+        } else {
+            var file = e.dataTransfer.files[0];
+        }
 
         //------------------
         //1 read image
@@ -51,54 +63,77 @@ function initCanvas(which_canvas) {
 
             //set canvas size
             var aspect_ratio = img.height / img.width;
+            if (~~(aspect_ratio * max_canvas_size) >= max_canvas_size) {
+                // vertically long
+                fit_width.push(~~(max_canvas_size / aspect_ratio));
+                fit_height.push(max_canvas_size);
+            } else {
+                //horizontally long
+                fit_width.push(max_canvas_size);
+                fit_height.push(~~(max_canvas_size * aspect_ratio));
+            }
 
-            var fit_width = m_width;
-            var fit_height = aspect_ratio * fit_width;
-            if (fit_height >= m_width) {
-                fit_height = m_width;
-                fit_width = fit_height / aspect_ratio;
+            var letsRender = true;
+
+            //detect size-confrict between 1st and 2nd canvas
+            if (loaded_img_count > 0) {
+                if ((which_canvas === "src" && fit_width[1] > fit_width[0]) || (which_canvas === "dest" && fit_width[1] < fit_width[0])) {
+                    alert("input vertically long image");
+                    fit_width.pop();
+                    fit_height.pop();
+                    letsRender = false;
+                } else if ((which_canvas === "src" && fit_height[1] > fit_height[0]) || (which_canvas === "dest" && fit_height[1] < fit_height[0])) {
+                    alert("input horizontally long image");
+                    fit_width.pop();
+                    fit_height.pop();
+                    letsRender = false;
+                } else {
+                    fit_width.shift();
+                    fit_height.shift();
+                    letsRender = true;
+                }
             }
 
             //------------------
             //render
             //------------------
-            canvas.width = fit_width;
-            canvas.height = fit_height;
-            ctx.drawImage(this, 0, 0, fit_width, fit_height);
-            ++loaded_img_count;
+            if (letsRender) {
+                canvas.width = fit_width[0];
+                canvas.height = fit_height[0];
+                ctx.imageSmoothingQuality = "high";
+                ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
 
-            //copy "dest canvas" to "result canvas"
-            if (which_canvas == "dest") {
-                result_canvas.width = fit_width;
-                result_canvas.height = fit_height;
-                result_img = img;
-                result_img.onload = new function() {
-                    result_ctx.drawImage(result_img, 0, 0, result_canvas.width, result_canvas.height);
-                    ++loaded_img_count;
+                ++loaded_img_count;
+
+                //copy "dest canvas" to "result canvas"
+                if (which_canvas == "dest") {
+                    result_canvas.width = canvas.width;
+                    result_canvas.height = canvas.height;
+                    result_img = img;
+                    result_img.onload = new function() {
+                        ctx.imageSmoothingQuality = "high";
+                        result_ctx.drawImage(result_img, 0, 0, result_canvas.width, result_canvas.height);
+                        ++loaded_img_count;
+                    }
+                }
+
+                if (loaded_img_count === 3) {
+                    //save current pixels for reset
+                    pixels = src_ctx.getImageData(0, 0, src_canvas.width, src_canvas.height);
+                    original_src_pixels = pixels;
+
+                    dest_file.removeEventListener('change', loadImage, false);
+                    src_file.removeEventListener('change', loadImage, false);
+
+                    calSourceCanvasOffset();
+                    src_canvas.addEventListener("touchmove", draw, true);
+                    src_canvas.addEventListener("touchstart", startSelcting, true);
+                    src_canvas.addEventListener("touchend", finishSelcting, true);
+                    $("#blend").hammer().on("swiperight", setSelectedArea);
+                    $("#blend").hammer().on("doubletap", setSelectedArea);
+                    window.addEventListener("scroll", calSourceCanvasOffset);
                 }
             }
-
-            if (loaded_img_count === 3) {
-                //remove event
-                document.removeEventListener("dragover", cancelEvent, false);
-                document.removeEventListener("dragenter", cancelEvent, false);
-                document.removeEventListener("drop", cancelEvent, false);
-                dest_canvas.removeEventListener("drop", loadImage, false);
-                src_canvas.removeEventListener("drop", loadImage, false);
-
-                //save current pixels for reset
-                pixels = src_ctx.getImageData(0, 0, src_canvas.width, src_canvas.height);
-                original_src_pixels = pixels;
-
-                calSourceCanvasOffset();
-                src_canvas.addEventListener("mousemove", draw, true);
-                src_canvas.addEventListener("mousedown", startSelcting, true);
-                src_canvas.addEventListener("mouseup", finishSelcting, true);
-                src_canvas.addEventListener("dblclick", setSelectedArea, true);
-
-                window.addEventListener('scroll', calSourceCanvasOffset);
-            }
-
         };
 
         //2 after read image
@@ -109,16 +144,21 @@ function initCanvas(which_canvas) {
         };
 
         //1read image
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(file)
 
     };
 
-    document.addEventListener("dragover", cancelEvent, false);
-    document.addEventListener("dragenter", cancelEvent, false);
-    document.addEventListener("drop", cancelEvent, false);
-    canvas.addEventListener("drop", loadImage, false);
+
+    // file DOM select
+    if (which_canvas == "dest") {
+        dest_file.addEventListener('change', loadImage, false);
+    } else if (which_canvas == "src") {
+        src_file.addEventListener('change', loadImage, false);
+    }
 
 };
+
+
 
 window.onload = new function() {
     dest_canvas = document.getElementById("src");
@@ -128,6 +168,9 @@ window.onload = new function() {
     dest_ctx = dest_canvas.getContext("2d");
     src_ctx = src_canvas.getContext("2d");
     result_ctx = result_canvas.getContext("2d");
+
+    dest_file = document.getElementById('dest_file');
+    src_file = document.getElementById('src_file');
 
     //Initialize canvas
     dest_img = new Image();
@@ -148,7 +191,6 @@ prev_point = {
 };
 
 var src_canvas_offset = {
-    x: 0,
     y: 0
 };
 
@@ -163,11 +205,12 @@ function calSourceCanvasOffset() {
 }
 
 function draw(e) {
+    e.preventDefault();
     if (isSelecting) {
         console.log("draw");
 
-        var x = e.clientX - src_canvas_offset.x;
-        var y = e.clientY - src_canvas_offset.y;
+        var x = e.touches[0].clientX - src_canvas_offset.x;
+        var y = e.touches[0].clientY - src_canvas_offset.y;
         var i = ~~(4 * (x + src_canvas.width * y));
 
         //line property
@@ -193,8 +236,8 @@ function draw(e) {
 function startSelcting(e) {
     console.log("startSelcting");
     isSelecting = true;
-    prev_point.x = e.clientX - src_canvas_offset.x;
-    prev_point.y = e.clientY - src_canvas_offset.y;
+    prev_point.x = e.touches[0].clientX - src_canvas_offset.x;
+    prev_point.y = e.touches[0].clientY - src_canvas_offset.y;
 }
 //mouse up
 function finishSelcting(e) {
@@ -237,17 +280,19 @@ function setSelectedArea(e) {
     result_ctx.putImageData(result_pixels, 0, 0);
 
     //deactivate src canvas.prohibit from selecting
-    src_canvas.removeEventListener("mousemove", draw, true);
-    src_canvas.removeEventListener("mousedown", startSelcting, true);
-    src_canvas.removeEventListener("mouseup", finishSelcting, true);
-    src_canvas.removeEventListener("dblclick", setSelectedArea, true);
+    src_canvas.removeEventListener("touchmove", draw, true);
+    src_canvas.removeEventListener("touchstart", startSelcting, true);
+    src_canvas.removeEventListener("touchend", finishSelcting, true);
+    $("#blend").hammer().off("swiperight", setSelectedArea);
+    $("#blend").hammer().off("doubletap", setSelectedArea);
 
     //activate result canvas
     calResultCanvasOffset();
-    result_canvas.addEventListener("mousemove", moveingBlendPos, false);
-    result_canvas.addEventListener("mousedown", startMovingBlendPos, false);
-    result_canvas.addEventListener("mouseup", finishMovingBlendPos, false);
-    window.addEventListener('scroll', calResultCanvasOffset);
+    result_canvas.addEventListener("touchmove", moveingBlendPos, false);
+    result_canvas.addEventListener("touchstart", startMovingBlendPos, false);
+    result_canvas.addEventListener("touchend", finishMovingBlendPos, false);
+
+    window.addEventListener("scroll", calResultCanvasOffset);
 
 }
 
@@ -270,16 +315,16 @@ function moveingBlendPos(e) {
     if (moving) {
         console.log("moving");
 
-        var x = e.clientX - result_canvas_offset.x;
-        var y = e.clientY - result_canvas_offset.y;
+        var x = e.touches[0].clientX - result_canvas_offset.x;
+        var y = e.touches[0].clientY - result_canvas_offset.y;
 
-        selected_position_moved.x = x - prev_point2.x;
-        selected_position_moved.y = y - prev_point2.y;
+        selected_position_moved.x = ~~(x - prev_point2.x);
+        selected_position_moved.y = ~~(y - prev_point2.y);
 
         result_ctx.putImageData(dest_pixels, 0, 0);
         setSelectedArea();
-
     }
+
 }
 
 function calResultCanvasOffset(e) {
@@ -293,8 +338,8 @@ function calResultCanvasOffset(e) {
 function startMovingBlendPos(e) {
     console.log("startMovingBlendPos");
     moving = true;
-    prev_point2.x = e.clientX - result_canvas_offset.x;
-    prev_point2.y = e.clientY - result_canvas_offset.y;
+    prev_point2.x = e.touches[0].clientX - result_canvas_offset.x;
+    prev_point2.y = e.touches[0].clientY - result_canvas_offset.y;
 
 }
 //mouse up
@@ -326,10 +371,9 @@ function poissonImporting(mode) {
     var error, total_fp, new_f;
     var prev_relative_error = 1.0;
 
-    console.log("selected_pos_y" + selected_position_moved.y);
-    console.log("selected_pos_y" + selected_position_moved.y);
+    var itr = 0;
 
-    while(true) {
+    while (true) {
         error = 0;
         total_fp = 0;
 
@@ -345,7 +389,7 @@ function poissonImporting(mode) {
                     selected_pixels.data[p + 2] === select_color[2] &&
                     selected_pixels.data[p + 3] === select_color[3]) {
 
-                    var p_moved = p + 4 * (selected_position_moved.x + selected_position_moved.y * width);
+                    var p_moved = p + ~~4 * (selected_position_moved.x + selected_position_moved.y * width);
 
                     // q in Np(neighbor of p)
                     var q = [
@@ -408,8 +452,14 @@ function poissonImporting(mode) {
         if (prev_relative_error === relative_error) {
             break;
         }
+
+        itr++;
+        if (itr > 150) {
+            itr = 0;
+            break;
+        }
         prev_relative_error = relative_error;
-        console.log(error,relative_error);
+        // console.log(error, relative_error);
     };
 
     result_ctx.putImageData(result_pixels, 0, 0);
@@ -442,16 +492,18 @@ function reset() {
     src_ctx.putImageData(original_src_pixels, 0, 0);
 
     //deactivate result canvas
-    result_canvas.removeEventListener("mousemove", moveingBlendPos, false);
-    result_canvas.removeEventListener("mousedown", startMovingBlendPos, false);
-    result_canvas.removeEventListener("mouseup", finishMovingBlendPos, false);
+    result_canvas.removeEventListener("touchmove", moveingBlendPos, false);
+    result_canvas.removeEventListener("touchstart", startMovingBlendPos, false);
+    result_canvas.removeEventListener("touchend", finishMovingBlendPos, false);
 
     //activate src canvas
     calSourceCanvasOffset();
-    src_canvas.addEventListener("mousemove", draw, true);
-    src_canvas.addEventListener("mousedown", startSelcting, true);
-    src_canvas.addEventListener("mouseup", finishSelcting, true);
-    src_canvas.addEventListener("dblclick", setSelectedArea, true);
+    src_canvas.addEventListener("touchmove", draw, true);
+    src_canvas.addEventListener("touchstart", startSelcting, true);
+    src_canvas.addEventListener("touchend", finishSelcting, true);
+
+    $("#blend").hammer().on("swiperight", setSelectedArea);
+    $("#blend").hammer().on("doubletap", setSelectedArea);
 
 }
 

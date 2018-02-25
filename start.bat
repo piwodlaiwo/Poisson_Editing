@@ -1,2 +1,3 @@
 cd /d %~dp0
-python server.py
+REM python server.py
+http-server -p 8000
