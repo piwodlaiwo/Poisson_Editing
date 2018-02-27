@@ -126,8 +126,8 @@ function initCanvas(which_canvas) {
                     src_canvas.addEventListener("touchmove", draw, true);
                     src_canvas.addEventListener("touchstart", startSelcting, true);
                     src_canvas.addEventListener("touchend", finishSelcting, true);
-                    $("#blend").hammer().on("swiperight", setSelectedArea);
-                    $("#blend").hammer().on("doubletap", setSelectedArea);
+                    $("#src").hammer().on("swiperight", setSelectedArea);
+                    $("#src").hammer().on("doubletap", setSelectedArea);
                     window.addEventListener("scroll", calSourceCanvasOffset);
                 }
             }
@@ -280,8 +280,8 @@ function setSelectedArea(e) {
     src_canvas.removeEventListener("touchmove", draw, true);
     src_canvas.removeEventListener("touchstart", startSelcting, true);
     src_canvas.removeEventListener("touchend", finishSelcting, true);
-    $("#blend").hammer().off("swiperight", setSelectedArea);
-    $("#blend").hammer().off("doubletap", setSelectedArea);
+    $("#src").hammer().off("swiperight", setSelectedArea);
+    $("#src").hammer().off("doubletap", setSelectedArea);
 
     //activate result canvas
     calResultCanvasOffset();
@@ -499,8 +499,8 @@ function reset() {
     src_canvas.addEventListener("touchstart", startSelcting, true);
     src_canvas.addEventListener("touchend", finishSelcting, true);
 
-    $("#blend").hammer().on("swiperight", setSelectedArea);
-    $("#blend").hammer().on("doubletap", setSelectedArea);
+    $("#src").hammer().on("swiperight", setSelectedArea);
+    $("#src").hammer().on("doubletap", setSelectedArea);
 
 }
 
