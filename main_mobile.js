@@ -423,12 +423,12 @@ function poissonImporting(mode) {
                             }
 
                             if (mode === 1) {
-                                //import
-                                sum_vpq += (gp - gq);
-                            } else {
                                 //mix
                                 sum_vpq +=
                                     (Math.abs(gp - gq) > Math.abs(fp_ast - fq_ast)) ? gp - gq : fp_ast - fq_ast;
+                            } else {
+                                //import
+                                sum_vpq += (gp - gq);
                             }
 
                         }
