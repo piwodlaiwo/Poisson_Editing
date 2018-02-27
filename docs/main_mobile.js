@@ -158,8 +158,8 @@ function initCanvas(which_canvas) {
 
 
 window.onload = new function() {
-    dest_canvas = document.getElementById("src");
-    src_canvas = document.getElementById("blend");
+    dest_canvas = document.getElementById("dest");
+    src_canvas = document.getElementById("src");
     result_canvas = document.getElementById("result");
 
     dest_ctx = dest_canvas.getContext("2d");

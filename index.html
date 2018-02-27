@@ -18,8 +18,8 @@
                 <li><a class="button" id="reset" onclick="reset()">reset</a></li>
                 <li><a class="button" id="save" onclick="save()" download="download.png">save</a></li>
                 <li><a class="button" id="debug" onclick="debug()">debug</a></li><br>
-                <li><a class="button" onclick="poissonImporting(1)">import</a></li>
-                <li><a class="button" onclick="poissonImporting(0)">mix</a></li>
+                <li><a class="button" onclick="poissonImporting(0)">import</a></li>
+                <li><a class="button" onclick="poissonImporting(1)">mix</a></li>
                 <li><a class="button" onclick="inverseRGB()">inverse</a></li>
             </div>
         </ul>
@@ -27,14 +27,14 @@
 
     <ul class="main">
         <li>
-            <canvas id="src" width="270" height="270" style="border:2px solid"></canvas><br>
+            <canvas id="dest" width="270" height="270" style="border:2px solid"></canvas><br>
             <input type="file" name="dest_file" id="dest_file">
         </li>
         <li>
             <div id="plus">+</div>
         </li>
         <li>
-            <canvas id="blend" width="270" height="270" style="border:2px solid"></canvas><br>
+            <canvas id="src" width="270" height="270" style="border:2px solid"></canvas><br>
             <input type="file" name="src_file" id="src_file">
         </li>
         <li>

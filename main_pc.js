@@ -70,8 +70,6 @@ function initCanvas(which_canvas) {
                 fit_height.push(~~(max_canvas_size * aspect_ratio));
             }
 
-            console.log(aspect_ratio);
-
             var letsRender = true;
 
             //detect size-confrict between 1st and 2nd canvas
@@ -93,8 +91,6 @@ function initCanvas(which_canvas) {
                 }
             }
 
-            console.log(fit_width, fit_height);
-
             //------------------
             //render
             //------------------
@@ -104,7 +100,6 @@ function initCanvas(which_canvas) {
                 ctx.imageSmoothingQuality = "high";
                 ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
 
-                console.log(canvas.width, canvas.height)
                 ++loaded_img_count;
 
                 //copy "dest canvas" to "result canvas"
@@ -157,8 +152,8 @@ function initCanvas(which_canvas) {
     document.addEventListener("dragover", cancelEvent, false);
     document.addEventListener("dragenter", cancelEvent, false);
     document.addEventListener("drop", cancelEvent, false);
-    // drag and drop
-    canvas.addEventListener("drop", loadImage, false); //pc
+    canvas.addEventListener("drop", loadImage, false);
+
     // file DOM select
     if (which_canvas == "dest") {
         dest_file.addEventListener('change', loadImage, false);
@@ -169,8 +164,8 @@ function initCanvas(which_canvas) {
 };
 
 window.onload = new function() {
-    dest_canvas = document.getElementById("src");
-    src_canvas = document.getElementById("blend");
+    dest_canvas = document.getElementById("dest");
+    src_canvas = document.getElementById("src");
     result_canvas = document.getElementById("result");
 
     dest_ctx = dest_canvas.getContext("2d");
@@ -279,8 +274,7 @@ function setSelectedArea(e) {
                 var p_moved = p + 4 * (selected_position_moved.x + selected_position_moved.y * src_canvas.width);
                 for (var rgb = 0; rgb < 3; rgb++) {
                     result_pixels.data[p_moved + rgb] = original_src_pixels.data[p + rgb];
-                    selected_pixels.data[p_moved + rgb] = src_pixels.data[p + rgb];
-                    // selected_pixels.data[p + rgb] = src_pixels.data[p + rgb];
+                    selected_pixels.data[p + rgb] = src_pixels.data[p + rgb];
                 }
             }
         }
@@ -327,11 +321,8 @@ function moveingBlendPos(e) {
         selected_position_moved.x = ~~(x - prev_point2.x);
         selected_position_moved.y = ~~(y - prev_point2.y);
 
-        // console.log(selected_position_moved.x,selected_position_moved.y);
-
         result_ctx.putImageData(dest_pixels, 0, 0);
         setSelectedArea();
-
     }
 }
 
@@ -397,7 +388,7 @@ function poissonImporting(mode) {
                     selected_pixels.data[p + 2] === select_color[2] &&
                     selected_pixels.data[p + 3] === select_color[3]) {
 
-                    var p_moved = p + 4 * (selected_position_moved.x + selected_position_moved.y * width);
+                    var p_moved = p + ~~4 * (selected_position_moved.x + selected_position_moved.y * width);
 
                     // q in Np(neighbor of p)
                     var q = [
@@ -434,12 +425,12 @@ function poissonImporting(mode) {
                             }
 
                             if (mode === 1) {
-                                //import
-                                sum_vpq += (gp - gq);
-                            } else {
                                 //mix
                                 sum_vpq +=
                                     (Math.abs(gp - gq) > Math.abs(fp_ast - fq_ast)) ? gp - gq : fp_ast - fq_ast;
+                            } else {
+                                //import
+                                sum_vpq += (gp - gq);
                             }
 
                         }
