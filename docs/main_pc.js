@@ -4,7 +4,7 @@ const select_color = [0, 255, 255, 255];
 
 var fit_width = new Array();
 var fit_height = new Array();
-var loaded_img_count = 0;
+var rendered_img_count = 0;
 
 var dest_canvas, src_canvas, result_canvas;
 var dest_ctx, src_ctx, result_ctx;
@@ -19,18 +19,17 @@ var selected_pixels;
 //-----------------------------------------
 
 function initCanvas(which_canvas) {
+    console.log("initCanvas");
 
     var img = new Image();
     if (which_canvas == "dest") {
         var ctx = dest_ctx;
         var canvas = dest_canvas;
         img = dest_img;
-    } else if (which_canvas == "src") {
+    } else {
         var ctx = src_ctx;
         var canvas = src_canvas;
         img = src_img;
-    } else {
-        return null;
     }
 
     //stop default event (like jump to link)
@@ -42,6 +41,18 @@ function initCanvas(which_canvas) {
 
     var loadImage = function(e) {
         e.preventDefault();
+
+        //Reload image:(initCanvas-->)loadImage-->
+        which_canvas = e.target.id.replace(/_file/, "");
+        if (which_canvas == "dest") {
+            var ctx = dest_ctx;
+            var canvas = dest_canvas;
+            img = dest_img;
+        } else {
+            var ctx = src_ctx;
+            var canvas = src_canvas;
+            img = src_img;
+        }
 
         if (e.target.type == "file") {
             var file = e.target.files[0];
@@ -73,7 +84,7 @@ function initCanvas(which_canvas) {
             var letsRender = true;
 
             //detect size-confrict between 1st and 2nd canvas
-            if (loaded_img_count > 0) {
+            if (rendered_img_count > 0) {
                 if ((which_canvas === "src" && fit_width[1] > fit_width[0]) || (which_canvas === "dest" && fit_width[1] < fit_width[0])) {
                     alert("input vertically long image");
                     fit_width.pop();
@@ -97,10 +108,11 @@ function initCanvas(which_canvas) {
             if (letsRender) {
                 canvas.width = fit_width[0];
                 canvas.height = fit_height[0];
+
                 ctx.imageSmoothingQuality = "high";
                 ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
 
-                ++loaded_img_count;
+                ++rendered_img_count;
 
                 //copy "dest canvas" to "result canvas"
                 if (which_canvas == "dest") {
@@ -110,11 +122,14 @@ function initCanvas(which_canvas) {
                     result_img.onload = new function() {
                         ctx.imageSmoothingQuality = "high";
                         result_ctx.drawImage(result_img, 0, 0, result_canvas.width, result_canvas.height);
-                        ++loaded_img_count;
+                        ++rendered_img_count;
                     }
                 }
 
-                if (loaded_img_count === 3) {
+                if (rendered_img_count === 3) {
+                    fit_width = [];
+                    fit_height = [];
+
                     //save current pixels for reset
                     pixels = src_ctx.getImageData(0, 0, src_canvas.width, src_canvas.height);
                     original_src_pixels = pixels;
@@ -482,6 +497,7 @@ function save() {
 }
 
 function reset() {
+    console.log("reset");
     //reset offset
     prev_point2.x = prev_point2.y = 0;
     selected_position_moved.x = selected_position_moved.y = 0;

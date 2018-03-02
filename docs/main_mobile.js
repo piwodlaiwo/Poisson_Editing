@@ -456,7 +456,7 @@ function poissonImporting(mode) {
             break;
         }
         prev_relative_error = relative_error;
-        // console.log(error, relative_error);
+        console.log(error, relative_error);
     };
 
     result_ctx.putImageData(result_pixels, 0, 0);

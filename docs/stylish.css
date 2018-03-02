@@ -27,11 +27,11 @@ a {
     text-decoration: none;
 }
 
-li {
+#container li {
     display: inline-block;
 }
 
-ul.main {
+#container ul.main {
     display: flex;
     justify-content: center;
     align-items: center;
