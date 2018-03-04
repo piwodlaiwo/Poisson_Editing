@@ -1,7 +1,7 @@
 Poisson Image Blending on browser
 ====
 ## Overview
-Application of <a href="http://www.irisa.fr/vista/Publis/Publi/Perez03a.english.html" target="_blank">this paper</a>. The demo is <a href="https://ugredium.github.io/Poisson_Editing/" target="_blank">here</a>.
+Application of <a href="http://www.irisa.fr/vista/Publis/Publi/Perez03a.english.html" target="_blank">this paper</a>. The demo is <a href="https://u-gred.github.io/Poisson_Editing/" target="_blank">here</a>.
 
 <img width="953" alt="screenshot" src="https://user-images.githubusercontent.com/26299162/31848351-b220a77a-b66b-11e7-98da-06f2cff05009.png">
 
